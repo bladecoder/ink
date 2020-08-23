@@ -343,9 +343,9 @@ namespace Ink.Runtime
 
                 // Have to cast to float since you could do POW(2, -1)
                 AddIntBinaryOp (Pow,      (x, y) => (float) Math.Pow(x, y));
-                AddIntUnaryOp(Floor,      Identity);
-                AddIntUnaryOp(Ceiling,    Identity);
-                AddIntUnaryOp(Int,        Identity);
+                AddIntUnaryOp(Floor, x => x);
+                AddIntUnaryOp(Ceiling, x => x);
+                AddIntUnaryOp(Int, x => x);
                 AddIntUnaryOp (Float,     x => (float)x);
 
                 // Float operations
@@ -374,7 +374,7 @@ namespace Ink.Runtime
                 AddFloatUnaryOp(Floor,      x => (float)Math.Floor(x));
                 AddFloatUnaryOp(Ceiling,    x => (float)Math.Ceiling(x));
                 AddFloatUnaryOp(Int,        x => (int)x);
-                AddFloatUnaryOp(Float,      Identity);
+                AddFloatUnaryOp(Float, x => x);
 
                 // String operations
                 AddStringBinaryOp(Add,     (x, y) => x + y); // concat

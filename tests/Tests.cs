@@ -4015,6 +4015,41 @@ VAR {0}z = -> {0}divert
             }
         }
 
+        [Test()]
+        public void TestBug()
+        {
+            var storyStr =
+        @"
+LIST gameState = KNOW_ALIEN_REPORT  
+
+- (init)
+
++   a
+    ~ gameState += KNOW_ALIEN_REPORT
+    -> init
+
++  {gameState ? KNOW_ALIEN_REPORT} OK
+    -> init
+
++ FAIL
+    -> END
+";
+
+            // Generate the choice with the forked thread
+            var story = CompileString(storyStr);
+            string s = story.ContinueMaximally();
+
+            Assert.AreEqual("", s);
+
+            story.ChooseChoiceIndex(0);
+            s = story.ContinueMaximally();
+            Assert.AreEqual("a\n", s);
+
+            story.ChooseChoiceIndex(1);
+            s = story.ContinueMaximally();
+            Assert.AreEqual("OK\n", s);
+        }
+
         private class TestWarningException : System.Exception
         { }
     }
