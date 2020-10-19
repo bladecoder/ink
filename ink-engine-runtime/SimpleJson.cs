@@ -335,16 +335,6 @@ namespace Ink.Runtime
                 _stateStack.Pop();
             }
 
-            public void WriteProperty(string name, Action<Writer> inner)
-            {
-                WriteProperty<string>(name, inner);
-            }
-
-            public void WriteProperty(int id, Action<Writer> inner)
-            {
-                WriteProperty<int>(id, inner);
-            }
-
             public void WriteProperty(string name, string content)
             {
                 WritePropertyStart(name);
@@ -366,15 +356,6 @@ namespace Ink.Runtime
                 WritePropertyEnd();
             }
 
-            public void WritePropertyStart(string name)
-            {
-                WritePropertyStart<string>(name);
-            }
-
-            public void WritePropertyStart(int id)
-            {
-                WritePropertyStart<int>(id);
-            }
 
             public void WritePropertyEnd()
             {
@@ -414,7 +395,23 @@ namespace Ink.Runtime
                 _writer.Write(str);
             }
 
-            void WritePropertyStart<T>(T name)
+            public void WritePropertyStart(string name)
+            {
+                Assert(state == State.Object);
+
+                if (childCount > 0)
+                    _writer.Write(",");
+
+                _writer.Write("\"");
+                _writer.Write(name);
+                _writer.Write("\":");
+
+                IncrementChildCount();
+
+                _stateStack.Push(new StateElement { type = State.Property });
+            }
+
+            public void WritePropertyStart(int name)
             {
                 Assert(state == State.Object);
 
@@ -432,7 +429,16 @@ namespace Ink.Runtime
 
 
             // allow name to be string or int
-            void WriteProperty<T>(T name, Action<Writer> inner)
+            public void WriteProperty(string name, Action<Writer> inner)
+            {
+                WritePropertyStart(name);
+
+                inner(this);
+
+                WritePropertyEnd();
+            }
+
+            public void WriteProperty(int name, Action<Writer> inner)
             {
                 WritePropertyStart(name);
 
